@@ -498,36 +498,25 @@ jobs:
           diff <(echo "$RESULT") <(echo "$EXPECTED")
 
   run-on-windows:
-    name: Run cargo-semver-checks on Windows
+    name: Install and run cargo-semver-checks on Windows
     runs-on: windows-latest
     steps:
       - name: Checkout cargo-semver-checks
         uses: actions/checkout@v3
         with:
           persist-credentials: false
+          path: 'cargo-semver-checks'
 
-      - name: Checkout test crate ref_slice baseline
+      - name: Checkout the test ref_slice repository
         uses: actions/checkout@v3
         with:
           persist-credentials: false
+          fetch-depth: 0
           repository: mgr0dzicki/cargo-semver-action-ref-slice
-          path: 'subject-baseline'
+          path: 'ref_slice'
 
-      - name: Checkout test crate ref_slice patch change
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-          repository: mgr0dzicki/cargo-semver-action-ref-slice
-          ref: 'patch_change'
-          path: 'subject-patch-change'
-
-      - name: Checkout test crate ref_slice major change
-        uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-          repository: mgr0dzicki/cargo-semver-action-ref-slice
-          ref: 'major_change'
-          path: 'subject-major-change'
+      - name: Enter the test repository
+        run: cd ref_slice
 
       - name: Install rust
         uses: actions-rs/toolchain@v1
@@ -538,17 +527,39 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          key: windows
+          key: installed-windows
 
-      - name: Run semver-checks on the patch change
-        run: cargo run semver-checks check-release --manifest-path="subject-patch-change/Cargo.toml" --baseline-root="subject-baseline/Cargo.toml"
+      - name: Install cargo-semver-checks
+        run: cargo install --path="../cargo-semver-checks"
 
-      - name: Run semver-checks on the major change (allowed to fail)
-        run: cargo run semver-checks check-release --manifest-path="subject-major-change/Cargo.toml" --baseline-root="subject-baseline/Cargo.toml"         
+      # Assumes that the latest published normal version of `ref_slice` smaller
+      # than 1.2.2 is 1.2.1.
+      # TODO: Change the crate version in the corresponding branch `patch_change`
+      # to 1.2.1 once new logic of choosing baseline is adapted in the GH action.
+      # Otherwise if new version 1.2.2 of `ref_slice` is released, the tests might
+      # stop working correctly.
+      - name: Checkout the test with patch change and patch version bump
+        run: git checkout patch_change
+
+      - name: Run semver-checks
+        run: cargo semver-checks check-release
+
+      # Assumes that the latest published normal version of `ref_slice` smaller
+      # than 1.2.2 is 1.2.1.
+      # TODO: Change the crate version in the corresponding branch `major_change`
+      # to 1.2.1 once new logic of choosing baseline is adapted in the GH action.
+      # Otherwise if new version 1.2.2 of `ref_slice` is released, the tests might
+      # stop working correctly.
+      - name: Checkout the test with major change and patch version bump
+        run: git checkout major_change        
+
+      - name: Run semver-checks
+        id: check_major
+        run: cargo semver-checks check-release
         continue-on-error: true
 
       - name: Fail if the check on the major change has not returned any errors (but it should have)
-        if: steps.action_major.outcome != 'failure'
+        if: steps.check_major.outcome != 'failure'
         run: |
           echo "Error! check-release should have failed because of the breaking change, but it has not."
           exit 1         
