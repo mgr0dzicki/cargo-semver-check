@@ -515,6 +515,9 @@ jobs:
           repository: mgr0dzicki/cargo-semver-action-ref-slice
           path: 'ref_slice'
 
+      - name: Dir
+        run: dir
+
       - name: Enter the test repository
         run: cd ref_slice
 
@@ -531,6 +534,9 @@ jobs:
 
       - name: Install cargo-semver-checks
         run: cargo install --path="cargo-semver-checks"
+
+      - name: Dir
+        run: dir
 
       # Assumes that the latest published normal version of `ref_slice` smaller
       # than 1.2.2 is 1.2.1.
