@@ -659,15 +659,13 @@ jobs:
           $EXPECTED = "     Parsing ref_slice v1.2.2 (current)`r`n     Parsing ref_slice v1.2.1 (baseline)`r`n    Checking ref_slice v1.2.1 -> v1.2.2 (patch change)"
           # Strip ANSI escapes for colors and bold text before comparing.
           $RESULT = (cat output | grep 'ref_slice v1.' | sed "s,\x1B\[[0-9;]*[a-zA-Z],,g") | Out-String
-          echo "$RESULT"
-          echo "$EXPECTED"
           compare $RESULT $EXPECTED
 
       - name: Semver break found
         run: |
-          EXPECTED="$(echo -e "--- failure function_missing: pub fn removed or renamed ---")"
-          RESULT="$(cat output | grep failure)"
-          diff <(echo "$RESULT") <(echo "$EXPECTED")
+          $EXPECTED = "--- failure function_missing: pub fn removed or renamed ---"
+          $RESULT = (cat output | grep failure)
+          compare $RESULT $EXPECTED
           # Ensure the following fragment (not full line!) is in the output file:
           grep '  function ref_slice::ref_slice, previously in file' output
 
