@@ -530,7 +530,7 @@ jobs:
           key: installed-windows
 
       - name: Install cargo-semver-checks
-        run: cargo install --path="../cargo-semver-checks"
+        run: cargo install --path="cargo-semver-checks"
 
       # Assumes that the latest published normal version of `ref_slice` smaller
       # than 1.2.2 is 1.2.1.
