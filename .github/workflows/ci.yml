@@ -28,6 +28,7 @@ jobs:
       - run-on-bevy-gltf
       - run-on-clap
       - run-on-sqllogictest
+      - run-on-windows
     steps:
       - run: exit 0
 
