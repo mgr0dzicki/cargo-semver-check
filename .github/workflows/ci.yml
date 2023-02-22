@@ -541,14 +541,10 @@ jobs:
           key: windows
 
       - name: Run semver-checks on the patch change
-        run: |
-          cargo run semver-checks check-release --manifest-path="subject-patch-change/Cargo.toml" ^
-            --baseline-root="subject-baseline/Cargo.toml"
+        run: cargo run semver-checks check-release --manifest-path="subject-patch-change/Cargo.toml" --baseline-root="subject-baseline/Cargo.toml"
 
       - name: Run semver-checks on the major change (allowed to fail)
-        run: |
-          cargo run semver-checks check-release --manifest-path="subject-major-change/Cargo.toml" ^
-            --baseline-root="subject-baseline/Cargo.toml"         
+        run: cargo run semver-checks check-release --manifest-path="subject-major-change/Cargo.toml" --baseline-root="subject-baseline/Cargo.toml"         
         continue-on-error: true
 
       - name: Fail if the check on the major change has not returned any errors (but it should have)
