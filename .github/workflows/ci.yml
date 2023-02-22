@@ -645,14 +645,14 @@ jobs:
 
       - name: Run semver-checks
         continue-on-error: true
-        run: |
-          set -euo pipefail
-          cargo run semver-checks check-release --manifest-path="subject/Cargo.toml" 2>&1 | tee output
-          touch unexpectedly_did_not_fail
+        id: semver_checks
+        run: cargo run semver-checks check-release --manifest-path="subject/Cargo.toml" 2>&1 | tee output
 
       - name: Check whether it failed
+        if: steps.semver_checks.outcome != 'failure'
         run: |
-          if [ -f unexpectedly_did_not_fail ]; then exit 1; else exit 0; fi
+          echo "Error! check-release should have failed because of the breaking change, but it has not."
+          exit 1
 
       - name: Baseline is correct
         run: |
@@ -670,9 +670,7 @@ jobs:
           grep '  function ref_slice::ref_slice, previously in file' output
 
       - name: Cleanup
-        run: |
-          rm output
-          rm -f unexpectedly_did_not_fail
+        run: rm output
 
   init-release:
     name: Run the release workflow
