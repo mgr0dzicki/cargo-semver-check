@@ -29,6 +29,7 @@ jobs:
       - run-on-clap
       - run-on-sqllogictest
       - run-on-ref-slice-fork
+      - run-on-ref-slice-fork-windows
     steps:
       - run: exit 0
 
@@ -581,6 +582,66 @@ jobs:
       - uses: Swatinem/rust-cache@v2
         with:
           key: ref-slice-fork
+
+      - name: Run semver-checks
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          cargo run semver-checks check-release --manifest-path="subject/Cargo.toml" 2>&1 | tee output
+          touch unexpectedly_did_not_fail
+
+      - name: Check whether it failed
+        run: |
+          if [ -f unexpectedly_did_not_fail ]; then exit 1; else exit 0; fi
+
+      - name: Baseline is correct
+        run: |
+          EXPECTED="$(echo -e "     Parsing ref_slice v1.2.2 (current)\n     Parsing ref_slice v1.2.1 (baseline)\n    Checking ref_slice v1.2.1 -> v1.2.2 (patch change)")"
+          # Strip ANSI escapes for colors and bold text before comparing.
+          RESULT="$(cat output | grep 'ref_slice v1.' | sed "s,\x1B\[[0-9;]*[a-zA-Z],,g")"
+          diff <(echo "$RESULT") <(echo "$EXPECTED")
+
+      - name: Semver break found
+        run: |
+          EXPECTED="$(echo -e "--- failure function_missing: pub fn removed or renamed ---")"
+          RESULT="$(cat output | grep failure)"
+          diff <(echo "$RESULT") <(echo "$EXPECTED")
+          # Ensure the following fragment (not full line!) is in the output file:
+          grep '  function ref_slice::ref_slice, previously in file' output
+
+      - name: Cleanup
+        run: |
+          rm output
+          rm -f unexpectedly_did_not_fail
+
+  run-on-ref-slice-fork-windows:
+    # Same as above, but run on a Windows machine.
+    name: Run cargo-semver-checks on ref-slice fork (Windows)
+    runs-on: windows-latest
+    steps:
+      - name: Checkout cargo-semver-checks
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: true
+
+      - name: Checkout ref-slice fork semver break
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false
+          repository: 'mgr0dzicki/cargo-semver-action-ref-slice'
+          ref: 'major_change'
+          path: 'subject'
+
+      - name: Install rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ref-slice-fork-windows
 
       - name: Run semver-checks
         continue-on-error: true
