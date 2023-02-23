@@ -643,13 +643,13 @@ jobs:
         with:
           key: ref-slice-fork-windows
 
-      - name: Build semver-checks
+      - name: Build cargo-semver-checks
         run: cargo build
 
       - name: Clear the cargo registry
-        run: rm -rf C:\Users\runneradmin\.cargo\registry
+        run: Remove-Item -Recurse -Force C:\Users\runneradmin\.cargo\registry
 
-      - name: Run semver-checks
+      - name: Run cargo-semver-checks
         continue-on-error: true
         id: semver_checks
         run: ./target/debug/cargo-semver-checks.exe check-release --manifest-path="subject/Cargo.toml" 2>&1 | tee output
