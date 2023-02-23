@@ -652,7 +652,7 @@ jobs:
       - name: Run cargo-semver-checks
         continue-on-error: true
         id: semver_checks
-        run: ./target/debug/cargo-semver-checks.exe check-release --manifest-path="subject/Cargo.toml" 2>&1 | tee output
+        run: ./target/debug/cargo-semver-checks.exe semver-checks check-release --manifest-path="subject/Cargo.toml" 2>&1 | tee output
 
       - name: Check whether it failed
         if: steps.semver_checks.outcome != 'failure'
