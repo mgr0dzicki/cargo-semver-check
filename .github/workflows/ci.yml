@@ -615,7 +615,10 @@ jobs:
           rm -f unexpectedly_did_not_fail
 
   run-on-ref-slice-fork-windows:
-    # Same as above, but run on a Windows machine.
+    # Same as above, but run on a Windows machine and from a compiled binary after
+    # removing .cargo/registry/index. This broke in a workflow of the GitHub Action
+    # using a precompiled binary after a fresh Rust installation, when the
+    # registry index does not exist yet.
     name: Run cargo-semver-checks on ref-slice fork (Windows)
     runs-on: windows-latest
     steps:
@@ -646,8 +649,8 @@ jobs:
       - name: Build cargo-semver-checks
         run: cargo build
 
-      #- name: Clear the cargo registry
-      #  run: Remove-Item -Recurse -Force C:\Users\runneradmin\.cargo\registry
+      - name: Remove the cargo registry index
+        run: Remove-Item -Recurse -Force C:\Users\runneradmin\.cargo\registry\index
 
       - name: Run cargo-semver-checks
         continue-on-error: true
