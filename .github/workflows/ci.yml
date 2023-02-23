@@ -646,8 +646,8 @@ jobs:
       - name: Build cargo-semver-checks
         run: cargo build
 
-      - name: Clear the cargo registry
-        run: Remove-Item -Recurse -Force C:\Users\runneradmin\.cargo\registry
+      #- name: Clear the cargo registry
+      #  run: Remove-Item -Recurse -Force C:\Users\runneradmin\.cargo\registry
 
       - name: Run cargo-semver-checks
         continue-on-error: true
