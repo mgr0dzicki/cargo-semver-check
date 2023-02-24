@@ -1220,7 +1220,7 @@ jobs:
         id: semver_checks
         run: |
           cd semver
-          ../bins/cargo-semver-checks.exe semver-checks check-release --manifest-path="subject/Cargo.toml" 2>&1 | tee output
+          ../bins/cargo-semver-checks.exe semver-checks check-release --manifest-path="../subject/Cargo.toml" 2>&1 | tee output
 
       - name: Check whether it failed
         if: steps.semver_checks.outcome != 'failure'
