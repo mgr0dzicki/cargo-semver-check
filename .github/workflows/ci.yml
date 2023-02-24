@@ -191,7 +191,7 @@ jobs:
           cd semver
           cargo build
           mkdir ../bins
-          mv target/debug/cargo-semver-checks ../bins/cargo-semver-checks
+          mv target/debug/cargo-semver-checks.exe ../bins/cargo-semver-checks.exe
 
       - name: cache binary
         uses: actions/cache/save@v3
@@ -1220,7 +1220,7 @@ jobs:
         id: semver_checks
         run: |
           cd semver
-          ./target/debug/cargo-semver-checks.exe semver-checks check-release --manifest-path="subject/Cargo.toml" 2>&1 | tee output
+          ../cargo-semver-checks.exe semver-checks check-release --manifest-path="subject/Cargo.toml" 2>&1 | tee output
 
       - name: Check whether it failed
         if: steps.semver_checks.outcome != 'failure'
