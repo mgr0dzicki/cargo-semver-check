@@ -1136,6 +1136,8 @@ jobs:
     # (see https://github.com/frewsxcv/rust-crates-index/issues/97).
     name: Run cargo-semver-checks on ref-slice fork (Windows)
     runs-on: windows-latest
+    needs:
+      - build-binary
     steps:
       - name: Checkout cargo-semver-checks
         uses: actions/checkout@v3
