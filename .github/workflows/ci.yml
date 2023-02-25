@@ -1165,7 +1165,7 @@ jobs:
     # This broke in a workflow of the GitHub Action using a precompiled binary
     # after a fresh Rust installation, when the registry index does not exist yet
     # (see https://github.com/frewsxcv/rust-crates-index/issues/97).
-    name: Run cargo-semver-checks on ref-slice fork (Windows)
+    name: 'Semver: ref-slice fork (Windows)'
     runs-on: windows-latest
     needs:
       - build-binary-windows
