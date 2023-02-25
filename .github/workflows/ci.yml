@@ -190,13 +190,13 @@ jobs:
         run: |
           cd semver
           cargo build
-          mkdir ../bins
-          mv target/debug/cargo-semver-checks.exe ../bins/cargo-semver-checks.exe
+          mkdir ..\bins
+          mv target\debug\cargo-semver-checks.exe ..\bins\cargo-semver-checks.exe
 
       - name: cache binary
         uses: actions/cache/save@v3
         with:
-          path: bins/
+          path: bins\
           key: bins-${{ runner.os }}-${{ github.run_id }}-${{ github.run_attempt }}
 
   run-on-rust-libp2p:
